@@ -31,6 +31,7 @@ class ParserController extends Controller
     {
         $parser = new Parser();
         $parser->parsingSalePage();
+        $parser->parsingNewsPage();
         return ExitCode::OK;
     }
 }
