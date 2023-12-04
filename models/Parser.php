@@ -28,21 +28,29 @@ class Parser extends Model
         if (!empty($models)) {
             $hasNewAuto = false;
             /* сохраняем модели авто в бд */
-            foreach ($models as $model) {
-                if (!($autoModel = AutoModels::find()->where(['model_id' => $model->model_id])->one())) {
+
+            $autoModelCount = AutoModels::find()->count();
+            $autoModelSiteCount = count($models);
+            if ($autoModelCount != $autoModelSiteCount) {
+                $hasNewAuto = true;
+                AutoModels::deleteAll();
+                foreach ($models as $model) {
                     $autoModel = new AutoModels();
-                    $hasNewAuto = true;
+                    $autoModel->model_id = $model->model_id;
+                    $autoModel->name = $model->name;
+                    $autoModel->save();
                 }
-                $autoModel->model_id = $model->model_id;
-                $autoModel->name = $model->name;
-                $autoModel->save();
             }
 
             if (!$hasNewAuto) {
-                $autoModelCount = AutoModels::find()->count();
-                $autoModelSiteCount = count($models);
-                if ($autoModelCount != $autoModelSiteCount) {
-                    $hasNewAuto = true;
+                foreach ($models as $model) {
+                    if (!($autoModel = AutoModels::find()->where(['model_id' => $model->model_id])->one())) {
+                        $autoModel = new AutoModels();
+                        $hasNewAuto = true;
+                    }
+                    $autoModel->model_id = $model->model_id;
+                    $autoModel->name = $model->name;
+                    $autoModel->save();
                 }
             }
 
@@ -93,26 +101,26 @@ class Parser extends Model
                 $titleString = null;
 
                 $meta = $item->find('.meta_part');
-               if(!empty($meta)) {
-                  $date = $meta[0]->find('span');
-                  $date = $date[0]->text();
-               }
-               $title = $item->find('.title a');
-               if(!empty($title)) {
-                  $link = $title[0]->attr('href');
-                  $titleString = trim(strip_tags($title[0]->html()));
-               }
+                if (!empty($meta)) {
+                    $date = $meta[0]->find('span');
+                    $date = $date[0]->text();
+                }
+                $title = $item->find('.title a');
+                if (!empty($title)) {
+                    $link = $title[0]->attr('href');
+                    $titleString = trim(strip_tags($title[0]->html()));
+                }
 
-               $news = News::find()->where(['link' => $link])->one();
-               if(empty($news)){
-                   $news = new News();
-                   $hasNews = true;
-               }
+                $news = News::find()->where(['link' => $link])->one();
+                if (empty($news)) {
+                    $news = new News();
+                    $hasNews = true;
+                }
 
-               $news->link = $link;
-               $news->title = $titleString;
-               $news->last_date = date("Y-m-d H:i:s",strtotime($date));
-               $news->save();
+                $news->link = $link;
+                $news->title = $titleString;
+                $news->last_date = date("Y-m-d H:i:s", strtotime($date));
+                $news->save();
 
             }
 
@@ -124,13 +132,13 @@ class Parser extends Model
                 try {
                     $message = 'Added news GM SITE';
                     $autoModels = News::find()->orderBy('last_date desc')->one();
-                     $message .= "\n"  . $autoModels->title;
+                    $message .= "\n" . $autoModels->title;
                     // Create Telegram API object
                     $telegram = new Telegram($bot_api_key, $bot_username);
 
                     $result = Request::sendMessage([
                         'chat_id' => 411213390,
-                        'text' =>'🔥🔥🔥🔥🔥'. $message . '🔥🔥🔥🔥🔥',
+                        'text' => '🔥🔥🔥🔥🔥' . $message . '🔥🔥🔥🔥🔥',
                     ]);
                 } catch (Longman\TelegramBot\Exception\TelegramException $e) {
                     // Silence is golden!
