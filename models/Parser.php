@@ -4,6 +4,7 @@ namespace app\models;
 
 use DiDom\Document;
 use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\RequestOptions;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Telegram;
 use PHPUnit\Util\Log\JSON;
@@ -183,11 +184,17 @@ class Parser extends Model
                 'form_params' => [
                     'filial_id' => 100,
                     'is_web' => 'Y'
-                ]
+                ],
+                 "proxy" => [
+                     "http://appweb8921:8bd16b@109.248.7.220:10065",
+                     "http://appweb8921:8bd16b@109.248.7.207:10213",
+                 ],
+                RequestOptions::VERIFY => false,
             ]);
             $code = $response->getStatusCode(); // 200
             if ($code == 200) {
                 $models = json_decode($response->getBody());
+                print_r($models);
                 return $models;
 
             }
