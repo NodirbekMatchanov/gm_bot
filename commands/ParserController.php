@@ -30,8 +30,8 @@ class ParserController extends Controller
     public function actionParse()
     {
         $parser = new Parser();
-        $parser->parsingSalePage();
         $parser->parsingNewsPage();
+        $parser->parsingSalePage();
         return ExitCode::OK;
     }
 }
