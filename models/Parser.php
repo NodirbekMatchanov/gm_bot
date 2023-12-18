@@ -185,11 +185,11 @@ class Parser extends Model
                     'filial_id' => 100,
                     'is_web' => 'Y'
                 ],
-                 "proxy" => [
-                     "http://appweb8921:8bd16b@109.248.7.220:10065",
-                     "http://appweb8921:8bd16b@109.248.7.207:10213",
-                 ],
-                RequestOptions::VERIFY => false,
+//                 "proxy" => [
+//                     "http://appweb8921:8bd16b@109.248.7.220:10065",
+//                     "http://appweb8921:8bd16b@109.248.7.207:10213",
+//                 ],
+//                RequestOptions::VERIFY => false,
             ]);
             $code = $response->getStatusCode(); // 200
             if ($code == 200) {
